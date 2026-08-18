@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Products() {
@@ -132,12 +133,12 @@ export default function Products() {
                       </span>
                     </div>
 
-                    <button
-                      type="button"
+                    <Link
+href="productDetailspage"
                       className="btn btn-primary w-100"
                     >
                       View Product
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
