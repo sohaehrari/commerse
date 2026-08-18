@@ -1,39 +1,45 @@
-import Link from "next/link";
-import "../globals.css";
+export const dynamic = "force-dynamic";
 
-export default async function ProductPage() {
-  const res = await fetch("https://fakestoreapi.com/products", {
-    cache: "force-cache",
-  });
+import { getProducts } from "@/lib/api";
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch products");
-  }
-
-  const products = await res.json();
+export default async function Products() {
+  const products = await getProducts();
 
   return (
-    <div className="pro">
-      <h2>Our Products</h2>
+    <main className="bg-dark text-light min-vh-100 py-5">
+      <div className="container">
+        <div className="text-center mb-5">
+          <h1 className="display-4 fw-bold text-primary">
+            All Products
+          </h1>
 
-      <div className="pro2">
-        {products.map((product) => (
-          <div className="key" key={product.id}>
-            <img
-              src={product.image}
-              alt={product.title}
-            />
+          <p className="text-secondary">
+            Explore our products
+          </p>
+        </div>
 
-            <h3>{product.title}</h3>
+        <div className="row g-4">
+          {products.map((product) => (
+            <div key={product.id} className="col-md-4">
+              <div className="card bg-secondary text-light h-100 shadow">
+                <div className="card-body d-flex flex-column">
+                  <h5 className="fw-bold">
+                    {product.title}
+                  </h5>
 
-            <p>${product.price}</p>
+                  <p className="small">
+                    {product.description}
+                  </p>
 
-            <Link href={`/products/${product.id}`}>
-              View Product
-            </Link>
-          </div>
-        ))}
+                  <p className="fw-bold text-warning">
+                    ${product.price}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

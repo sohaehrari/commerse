@@ -60,10 +60,7 @@ export default function Home() {
 
         <div className="row g-4">
           {products.map((product) => (
-            <div
-              key={product.id}
-              className="col-md-4"
-            >
+            <div key={product.id} className="col-md-4">
               <div className="card bg-secondary text-light h-100 shadow">
                 <div className="card-body d-flex flex-column">
                   <h5 className="fw-bold">
