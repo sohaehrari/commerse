@@ -134,7 +134,8 @@ export default function Products() {
                     </div>
 
                     <Link
-href="productDetailspage"
+                   href={`/products/${product.id}`}
+
                       className="btn btn-primary w-100"
                     >
                       View Product

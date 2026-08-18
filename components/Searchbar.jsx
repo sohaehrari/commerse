@@ -1,26 +1,99 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-export default function SearchPage({ products = [] }) {
+export default function SearchPage() {
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await fetch(
+          "https://fakestoreapi.com/products"
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
+
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          throw new Error("Invalid product data");
+        }
+
+        setProducts(data);
+      } catch (err) {
+        console.error("Product fetch error:", err);
+        setError("Unable to load products.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
-    const searchValue = search.trim().toLowerCase();
+    const value = search.trim().toLowerCase();
 
-    if (!searchValue) {
+    if (!value) {
       return products;
     }
 
     return products.filter((product) =>
-      product.title?.toLowerCase().includes(searchValue)
+      product.title?.toLowerCase().includes(value)
     );
   }, [products, search]);
+
+  if (loading) {
+    return (
+      <main className="container py-5 text-center">
+        <div
+          className="spinner-border text-primary"
+          role="status"
+        >
+          <span className="visually-hidden">
+            Loading...
+          </span>
+        </div>
+
+        <p className="mt-3 text-muted">
+          Loading products...
+        </p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="container py-5 text-center">
+        <h2 className="text-danger">
+          {error}
+        </h2>
+
+        <button
+          type="button"
+          className="btn btn-primary mt-3"
+          onClick={() => window.location.reload()}
+        >
+          Try Again
+        </button>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-light min-vh-100 py-5">
       <div className="container">
+
         {/* Header */}
         <div className="text-center mb-5">
           <h1 className="display-5 fw-bold text-primary">
@@ -32,10 +105,11 @@ export default function SearchPage({ products = [] }) {
           </p>
         </div>
 
-        {/* Search */}
+        {/* Search bar */}
         <div className="row justify-content-center mb-5">
           <div className="col-12 col-md-8 col-lg-6">
             <div className="input-group input-group-lg shadow-sm">
+
               <span className="input-group-text bg-white">
                 🔍
               </span>
@@ -45,14 +119,18 @@ export default function SearchPage({ products = [] }) {
                 className="form-control"
                 placeholder="Search products..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
               />
+
             </div>
           </div>
         </div>
 
-        {/* Results header */}
+        {/* Results */}
         <div className="d-flex justify-content-between align-items-center mb-4">
+
           <h2 className="h4 mb-0">
             Products
           </h2>
@@ -60,18 +138,21 @@ export default function SearchPage({ products = [] }) {
           <span className="badge bg-primary fs-6">
             {filteredProducts.length}
           </span>
+
         </div>
 
-        {/* Products */}
+        {/* Product cards */}
         {filteredProducts.length > 0 ? (
           <div className="row g-4">
+
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="col-12 col-sm-6 col-lg-4 col-xl-3"
               >
+
                 <div className="card h-100 border-0 shadow-sm">
-                  
+
                   {/* Image */}
                   <div
                     className="bg-white p-4 d-flex align-items-center justify-content-center"
@@ -88,8 +169,9 @@ export default function SearchPage({ products = [] }) {
                     />
                   </div>
 
-                  {/* Information */}
+                  {/* Details */}
                   <div className="card-body d-flex flex-column">
+
                     <h5
                       className="card-title fw-bold"
                       style={{ minHeight: "50px" }}
@@ -98,12 +180,12 @@ export default function SearchPage({ products = [] }) {
                     </h5>
 
                     <p className="text-muted small flex-grow-1">
-                      {product.description
-                        ? `${product.description.slice(0, 100)}...`
-                        : "No description available."}
+                      {product.description?.slice(0, 100)}
+                      ...
                     </p>
 
                     <div className="d-flex justify-content-between align-items-center mt-3">
+
                       <span className="text-primary fw-bold fs-5">
                         ${product.price}
                       </span>
@@ -114,35 +196,43 @@ export default function SearchPage({ products = [] }) {
                       >
                         View Product
                       </Link>
+
                     </div>
+
                   </div>
+
                 </div>
+
               </div>
             ))}
+
           </div>
         ) : (
           <div className="text-center py-5">
+
             <div className="display-4 mb-3">
               🔍
             </div>
 
-            <h3>No products found</h3>
+            <h3>
+              No products found
+            </h3>
 
             <p className="text-muted">
               Try searching for another product.
             </p>
 
-            {search && (
-              <button
-                type="button"
-                className="btn btn-outline-primary"
-                onClick={() => setSearch("")}
-              >
-                Show All Products
-              </button>
-            )}
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={() => setSearch("")}
+            >
+              Show All Products
+            </button>
+
           </div>
         )}
+
       </div>
     </main>
   );
