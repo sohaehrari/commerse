@@ -1,6 +1,6 @@
 import SearchPage from "@/components/Searchbar";
 
-export default function Search() {
+export default function SearchPage() {
   return <SearchPage />;
 }"use client";
 
