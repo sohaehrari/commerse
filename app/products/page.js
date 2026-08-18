@@ -1,44 +1,62 @@
-export const dynamic = "force-dynamic";
+"use client";
 
-import { getProducts } from "@/lib/api";
+import { useEffect, useState } from "react";
 
-export default async function Products() {
-  const products = await getProducts();
+export default function Products() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch(
+          "https://fakestoreapi.com/products"
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
+
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+        setError("Failed to load products.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
+
+  if (loading) {
+    return <h2>Loading products...</h2>;
+  }
+
+  if (error) {
+    return <h2>{error}</h2>;
+  }
 
   return (
-    <main className="bg-dark text-light min-vh-100 py-5">
-      <div className="container">
-        <div className="text-center mb-5">
-          <h1 className="display-4 fw-bold text-primary">
-            All Products
-          </h1>
+    <main className="container py-5">
+      <h1 className="mb-5">Products</h1>
 
-          <p className="text-secondary">
-            Explore our products
-          </p>
-        </div>
+      <div className="row g-4">
+        {products.map((product) => (
+          <div key={product.id} className="col-md-4">
+            <div className="card h-100">
+              <div className="card-body">
+                <h2 className="h5">{product.title}</h2>
 
-        <div className="row g-4">
-          {products.map((product) => (
-            <div key={product.id} className="col-md-4">
-              <div className="card bg-secondary text-light h-100 shadow">
-                <div className="card-body d-flex flex-column">
-                  <h5 className="fw-bold">
-                    {product.title}
-                  </h5>
+                <p>{product.description}</p>
 
-                  <p className="small">
-                    {product.description}
-                  </p>
-
-                  <p className="fw-bold text-warning">
-                    ${product.price}
-                  </p>
-                </div>
+                <strong>${product.price}</strong>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </main>
   );
