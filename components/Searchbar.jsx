@@ -1,38 +1,10 @@
-"use client"
+"use client";
 
-
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 
-export default function SearchPage() {
-  const [products, setProducts] = useState([]);
+export default function SearchPage({ products }) {
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function loadProducts() {
-      try {
-        const res = await fetch(
-          "https://fakestoreapi.com/products"
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await res.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Product error:", error);
-        setError("Unable to load products.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadProducts();
-  }, []);
 
   const filteredProducts = useMemo(() => {
     const searchValue = search.trim().toLowerCase();
@@ -46,47 +18,9 @@ export default function SearchPage() {
     );
   }, [products, search]);
 
-  if (loading) {
-    return (
-      <main className="container py-5 text-center">
-        <div
-          className="spinner-border text-primary"
-          role="status"
-        >
-          <span className="visually-hidden">
-            Loading...
-          </span>
-        </div>
-
-        <p className="mt-3 text-muted">
-          Loading products...
-        </p>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="container py-5 text-center">
-        <h2 className="text-danger">
-          {error}
-        </h2>
-
-        <button
-          className="btn btn-primary mt-3"
-          onClick={() => window.location.reload()}
-        >
-          Try Again
-        </button>
-      </main>
-    );
-  }
-
   return (
     <main className="bg-light min-vh-100 py-5">
       <div className="container">
-
-        {/* Header */}
         <div className="text-center mb-5">
           <h1 className="display-5 fw-bold text-primary">
             Product Search
@@ -97,7 +31,6 @@ export default function SearchPage() {
           </p>
         </div>
 
-        {/* Search bar */}
         <div className="row justify-content-center mb-5">
           <div className="col-12 col-md-8 col-lg-6">
             <div className="input-group input-group-lg shadow-sm">
@@ -110,26 +43,20 @@ export default function SearchPage() {
                 className="form-control"
                 placeholder="Search products..."
                 value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
-                }
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        {/* Results header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="h4 mb-0">
-            Products
-          </h2>
+          <h2 className="h4 mb-0">Products</h2>
 
           <span className="badge bg-primary fs-6">
             {filteredProducts.length}
           </span>
         </div>
 
-        {/* Products */}
         {filteredProducts.length > 0 ? (
           <div className="row g-4">
             {filteredProducts.map((product) => (
@@ -138,8 +65,6 @@ export default function SearchPage() {
                 className="col-12 col-sm-6 col-lg-4 col-xl-3"
               >
                 <div className="card h-100 border-0 shadow-sm">
-
-                  {/* Image */}
                   <div
                     className="bg-white p-4 d-flex align-items-center justify-content-center"
                     style={{ height: "240px" }}
@@ -155,7 +80,6 @@ export default function SearchPage() {
                     />
                   </div>
 
-                  {/* Information */}
                   <div className="card-body d-flex flex-column">
                     <h5
                       className="card-title fw-bold"
@@ -165,8 +89,7 @@ export default function SearchPage() {
                     </h5>
 
                     <p className="text-muted small flex-grow-1">
-                      {product.description?.slice(0, 100)}
-                      ...
+                      {product.description?.slice(0, 100)}...
                     </p>
 
                     <div className="d-flex justify-content-between align-items-center mt-3">
@@ -182,16 +105,13 @@ export default function SearchPage() {
                       </Link>
                     </div>
                   </div>
-
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-5">
-            <div className="display-4 mb-3">
-              🔍
-            </div>
+            <div className="display-4 mb-3">🔍</div>
 
             <h3>No products found</h3>
 
