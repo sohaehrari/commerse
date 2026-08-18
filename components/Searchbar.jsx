@@ -1,9 +1,8 @@
+"use client"
+
+
+
 import SearchPage from "@/components/Searchbar";
-
-export default function SearchPage() {
-  return <SearchPage />;
-}"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
