@@ -1,8 +1,6 @@
 "use client"
 
 
-
-import SearchPage from "@/components/Searchbar";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
