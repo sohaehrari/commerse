@@ -1,48 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getProducts } from "./lib/api";
+import { getProducts } from "@/lib/api";
 
 export default function Home() {
-  const router = useRouter();
-
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
     async function loadProducts() {
       try {
         const data = await getProducts();
         setProducts(data);
       } catch (error) {
-        console.log("Error loading products:", error);
+        console.error("Error loading products:", error);
+        setError("Failed to load products.");
       } finally {
         setLoading(false);
       }
     }
 
     loadProducts();
-  }, [router]);
+  }, []);
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        Loading...
-      </div>
+      <main className="bg-dark text-light min-vh-100 py-5">
+        <div className="container text-center">
+          <h2>Loading products...</h2>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="bg-dark text-light min-vh-100 py-5">
+        <div className="container text-center">
+          <h2 className="text-danger">{error}</h2>
+        </div>
+      </main>
     );
   }
 
   return (
-    <div className="bg-dark text-light min-vh-100 py-5">
+    <main className="bg-dark text-light min-vh-100 py-5">
       <div className="container">
         <div className="text-center mb-5">
           <h1 className="display-4 fw-bold text-primary">
@@ -61,24 +65,20 @@ export default function Home() {
               className="col-md-4"
             >
               <div className="card bg-secondary text-light h-100 shadow">
-                <div className="card-body">
+                <div className="card-body d-flex flex-column">
                   <h5 className="fw-bold">
                     {product.title}
                   </h5>
 
                   <p className="small">
-                    {product.description?.slice(
-                      0,
-                      80
-                    )}
-                    ...
+                    {product.description?.slice(0, 80)}...
                   </p>
 
                   <Link
                     href="/products"
-                    className="btn btn-primary w-100 mt-2"
+                    className="btn btn-primary w-100 mt-auto"
                   >
-                    View Product
+                    View Products
                   </Link>
                 </div>
               </div>
@@ -86,6 +86,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

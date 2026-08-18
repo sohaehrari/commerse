@@ -1,4 +1,4 @@
-import SearchPage from "../components/Searchbar";
+import SearchPage from "@/components/Searchbar";
 
 export default async function Search() {
   const res = await fetch("https://fakestoreapi.com/products", {
